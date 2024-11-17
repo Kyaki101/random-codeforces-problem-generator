@@ -1,35 +1,47 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
-import './App.css'
+import Header from './Header'
+import ImageLogo from './ImageLogo'
+import InputBox from './InputBox'
+import SearchButton from './SearchButton'
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [problems, setProblems] = useState(null);
+    const [error, setError] = useState(null);
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+
+    const handleSubmit = async () => {
+        try {
+            const response = await fetch("https://codeforces.com/api/problemset.problems");
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+            const data = await response.json();
+            setProblems(data.result.problems); 
+            console.log(data.result.problems);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setError(error.message);
+        }
+    };
+
+    useEffect(() => {
+        handleSubmit();
+    }, []);
+
+
+
+    return(
+        <>
+
+            <ImageLogo></ImageLogo>
+            <InputBox problems={problems}></InputBox>
+
+            
+        </>
+    )
+
 }
 
 export default App
